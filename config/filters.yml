@@ -1,0 +1,11 @@
+# config/filters.yml
+
+rendering: ~
+security:  ~
+
+exceptionCatcherFilter:
+    class: liApiExceptionCatcherFilter
+        
+cache:     ~
+execution: ~
+

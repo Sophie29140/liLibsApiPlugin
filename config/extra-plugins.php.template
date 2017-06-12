@@ -1,0 +1,13 @@
+<?php
+return array(
+  'plugins' => array(
+
+      // add extra plugins here, one by line
+      'liLibsApiPlugin',
+      'sfDependencyInjectionPlugin',
+  ),
+  
+  'filters' => array(
+    'exceptionCatcherFilter' => 'on',
+  ),
+);

@@ -1,0 +1,13 @@
+# config/services.yml
+dev:
+  parameters:
+
+all:
+  parameters:
+
+  services:
+    api_actions_service:
+      class: ApiActionsService
+    api_translation_service:
+      class: ApiTranslationService
+
