@@ -125,10 +125,13 @@ abstract class apiActions extends jsonActions
      */
     public function getOne(sfWebRequest $request)
     {
-        $query = ['criteria' => ['id' => ['value' => $request->getParameter('id'), 'type' => 'equal']]];
+        $query = [
+            'criteria' => ['id' => ['value' => $request->getParameter('id'), 'type' => 'equal']],
+            'limit'    => 1,
+        ];
         $service  = $this->getMyService();
         $result  = $service->findAll($query);
-        return $this->createJsonResponse($result);
+        return $this->createJsonResponse($result[0]);
     }
 
     /**
