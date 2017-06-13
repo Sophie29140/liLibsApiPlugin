@@ -54,7 +54,7 @@ abstract class jsonActions extends sfActions
                 throw new liApiAuthCredentialsException('[OAuth] Invalid authentication credentials');
             }
             // assign user
-            $sf_user->signIn($oauthService->getToken()->OcApplication->User, true);
+            $sf_user->signIn($oauthService->getToken()->getApplication()->User, true);
 
             $cultures = array_keys(sfConfig::get('project_internals_cultures', ['fr' => 'Français']));
             $sf_user->setCulture($cultures[0]);
