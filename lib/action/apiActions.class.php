@@ -131,7 +131,7 @@ abstract class apiActions extends jsonActions
         ];
         $service  = $this->getMyService();
         $result  = $service->findAll($query);
-        return $this->createJsonResponse($result[0]);
+        return $this->createJsonResponse(isset($result[0]) ? $result[0] : new ArrayObject);
     }
 
     /**
