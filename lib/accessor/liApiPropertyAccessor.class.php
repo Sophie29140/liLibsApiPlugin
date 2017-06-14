@@ -28,7 +28,7 @@ class liApiPropertyAccessor
             }
 
             $value = $this->getAPIValue($entity, $api['value']);
-            $this->setRecordValue($record, preg_replace('/^!/', '', $db), preg_match('/^!/', $db) == 0 ? $value : !$value);
+            $this->setRecordValue($record, preg_replace('/^!/', '', $db), strpos($db,'!') !== 0 ? $value : !$value);
 
             //$this->setRecordValue($record, $db, $this->getAPIValue($entity, $api));
         }
