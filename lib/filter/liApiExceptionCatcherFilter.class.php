@@ -48,7 +48,7 @@ class liApiExceptionCatcherFilter
         
             $r->setContent(json_encode([
                     'code'=> ApiHttpStatus::NOT_IMPLEMENTED,
-                    'message' => $e->getMessage()
+                    'message' => $e->getMessage() ? $e->getMessage() : 'Feature not implemented',
                 ], JSON_PRETTY_PRINT));
         
         } catch ( liApiConfigurationException $e ) {
