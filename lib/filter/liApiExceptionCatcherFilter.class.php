@@ -51,11 +51,21 @@ class liApiExceptionCatcherFilter
                     'message' => $e->getMessage()
                 ], JSON_PRETTY_PRINT));
         
+        } catch ( liApiConfigurationException $e ) {
+        
+            ApiLogger::log($e->getMessage());
+            $r = $this->getResponse();
+            $r->setStatusCode(ApiHttpStatus::INSUFFICIENT_STORAGE);
+        
+            $r->setContent(json_encode([
+                    'code'=> ApiHttpStatus::INSUFFICIENT_STORAGE,
+                    'message' => $e->getMessage()
+                ], JSON_PRETTY_PRINT));
         } catch ( liApiException $e ) {
         
             ApiLogger::log($e->getMessage());
             $r = $this->getResponse();
-            $r->setStatusCode(ApiHttpStatus::SERVICE_UNAVAILABLE);
+            $r->setStatusCode(ApiHttpStatus::INTERNAL_SERVER_ERROR);
         
             $r->setContent(json_encode([
                     'code'=> ApiHttpStatus::SERVICE_UNAVAILABLE ,

@@ -26,5 +26,6 @@ class ApiHttpStatus
     const NOT_IMPLEMENTED = 501;
     const SERVICE_UNAVAILABLE = 503;
     const TIME_OUT = 504;
+    const INSUFFICIENT_STORAGE = 507;
 
 }

@@ -52,7 +52,7 @@ class liApiPropertyAccessor
             if ( is_array($db) ) {
                 $type = explode('.', $db['type']);
                 $lastType = array_pop($type);
-                $bool = preg_match('/^!/', $db['value']) == 0;
+                $bool = $db['value'] ? strpos($db['value'], '!') !== 0 : true;
                 if ($db['value'] !== null) {
                     $db['value'] = preg_replace('/^!/', '', $db['value']);
                 }
@@ -69,6 +69,9 @@ class liApiPropertyAccessor
                         break;
                     case 'collection':
                         $this->setAPIValue($entity, $api, $db['value'] === NULL ? [] : $this->getRecordValue($record, $db['value']), $type, $bool);
+                        break;
+                    case 'value':
+                        $this->setAPIValue($entity, $api, $db['value'] === NULL ? '' : $db['value']);
                         break;
                 }
             }
@@ -122,6 +125,9 @@ class liApiPropertyAccessor
         }
 
         if ( $currentType == 'collection' ) {
+            if ( !is_array($value) ) {
+                throw new liApiConfigurationException('There is an error in the configuration of data mapping, with a collection that refers to a single property');
+            }
             foreach ( $value as $k => $v ) {
                 $this->setAPIValue($entity[$key][$k], $api, $value[$k], $type, $bool);
             }
