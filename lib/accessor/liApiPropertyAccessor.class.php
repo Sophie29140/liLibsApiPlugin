@@ -126,7 +126,7 @@ class liApiPropertyAccessor
 
         if ( $currentType == 'collection' ) {
             if ( !is_array($value) ) {
-                throw new liApiConfigurationException('There is an error in the configuration of data mapping, with a collection that refers to a single property');
+                throw new liApiConfigurationException(sprintf('There is an error in the configuration of data mapping, with a collection "%s" that refers to a single property', $key));
             }
             foreach ( $value as $k => $v ) {
                 $this->setAPIValue($entity[$key][$k], $api, $value[$k], $type, $bool);
