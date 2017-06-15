@@ -15,6 +15,13 @@ class liApiPropertyAccessor
     /**
      * Updates a Doctrine_Record with data coming from an array of the API structure
      *
+     * Example of the expected API structure:
+     * [
+     *   'id'      => ['type' => 'single', 'value' => 'id', 'updatable' => false],
+     *   'name'    => ['type' => 'single', 'value' => 'name'],
+     *   'value'   => ['type' => 'single', 'value' => 'value'],
+     * ]
+     *
      * @param array            $entity  the source of data
      * @param Doctrine_Record  $record  the target
      * @param array            $equiv   the equivalence between DB & API fields
@@ -26,11 +33,17 @@ class liApiPropertyAccessor
             if ( !isset($entity[$api['value']]) ) {
                 continue;
             }
+            
+            $cleanedDb = [];
+            foreach ( $db as $api => $rec ) {
+                if (!( isset($rec['updatable']) && $rec['updatable'] === false )) {
+                    unset($rec['updatable']);
+                    $cleanedDb[] = $rec;
+                }
+            }
 
             $value = $this->getAPIValue($entity, $api['value']);
             $this->setRecordValue($record, preg_replace('/^!/', '', $db), strpos($db,'!') !== 0 ? $value : !$value);
-
-            //$this->setRecordValue($record, $db, $this->getAPIValue($entity, $api));
         }
         return $record;
     }
