@@ -194,7 +194,27 @@ abstract class apiActions extends jsonActions
      */
     public function create(sfWebRequest $request)
     {
-        return $this->createJsonResponse(['message' => __METHOD__]);
+        $status = ApiHttpStatus::SUCCESS;
+        $message = ApiHttpMessage::UPDATE_SUCCESSFUL;
+
+        /* @var $eventService ApiEventsService */
+        $service = $this->getMyService();
+
+        if ( !method_exists($service, 'create') ) {
+            throw new liApiNotImplementedException('Sorry, create is impossible.');
+        }
+
+        $isSuccess = $service->update($request->getParameter('application/json'));
+
+        if (!$isSuccess) {
+            $status  = ApiHttpStatus::BAD_REQUEST;
+            $message = ApiHttpMessage::UPDATE_FAILED;
+        }
+
+        return $this->createJsonResponse([
+            'code'    => $status,
+            'message' => $message
+        ], $status);
     }
 
     /**
@@ -207,7 +227,27 @@ abstract class apiActions extends jsonActions
      */
     public function update(sfWebRequest $request)
     {
-        return $this->createJsonResponse(['message' => __METHOD__]);
+        $status = ApiHttpStatus::SUCCESS;
+        $message = ApiHttpMessage::UPDATE_SUCCESSFUL;
+
+        /* @var $eventService ApiEventsService */
+        $service = $this->getMyService();
+
+        if ( !method_exists($service, 'update') ) {
+            throw new liApiNotImplementedException('Sorry, update is impossible.');
+        }
+
+        $isSuccess = $service->update($request->getParameter('id', 0), $request->getParameter('application/json'));
+
+        if (!$isSuccess) {
+            $status  = ApiHttpStatus::BAD_REQUEST;
+            $message = ApiHttpMessage::UPDATE_FAILED;
+        }
+
+        return $this->createJsonResponse([
+            'code'    => $status,
+            'message' => $message
+        ], $status);
     }
 
     /**
@@ -220,7 +260,27 @@ abstract class apiActions extends jsonActions
      */
     public function delete(sfWebRequest $request)
     {
-        return $this->createJsonResponse(['message' => __METHOD__]);
+        $status = ApiHttpStatus::SUCCESS;
+        $message = ApiHttpMessage::DELETE_SUCCESSFUL;
+
+        /* @var $eventService ApiEventsService */
+        $service = $this->getMyService();
+
+        if ( !method_exists($service, 'delete') ) {
+            throw new liApiNotImplementedException('Sorry, delete is impossible.');
+        }
+
+        $isSuccess = $service->delete($request->getParameter('id', 0));
+
+        if (!$isSuccess) {
+            $status  = ApiHttpStatus::BAD_REQUEST;
+            $message = ApiHttpMessage::DELETE_FAILED;
+        }
+
+        return $this->createJsonResponse([
+            'code'    => $status,
+            'message' => $message
+        ], $status);
     }
 
     /**

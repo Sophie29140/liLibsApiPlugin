@@ -45,6 +45,7 @@ class liApiPropertyAccessor
             $value = $this->getAPIValue($entity, $api['value']);
             $this->setRecordValue($record, preg_replace('/^!/', '', $db), strpos($db,'!') !== 0 ? $value : !$value);
         }
+        
         return $record;
     }
 
@@ -104,7 +105,7 @@ class liApiPropertyAccessor
         if ( !isset($entity[$key]) ) {
             return NULL;
         }
-        if ( !is_array($entity[$key]) && count($api) == 0 ) {
+        if ( count($api) == 0 ) {
             return $entity[$key];
         }
 
@@ -205,7 +206,12 @@ class liApiPropertyAccessor
 
         // get out of here
         if ( !$db ) {
-            $record = $value;
+            if ( is_array($value) ) {
+                $record->fromArray($value);
+            }
+            else {
+                $record = $value;
+            }
             return $this;
         }
 
