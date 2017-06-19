@@ -264,4 +264,40 @@ abstract class ApiEntityService extends EvenementService implements ApiEntitySer
     {
         return static::$HIDDEN_FIELD_MAPPING;
     }
+      /**
+     *
+     * @return array    
+     */
+    public function findAll(array $query)
+    {
+        $q = $this->buildQuery($query);
+        $record = $q->execute();
+
+        return $this->getFormattedEntities($record);
+    }
+
+    /**
+     *
+     * @param int $record_id
+     * @return array | null
+     */
+    public function findOneById($record_id)
+    {
+        $recDotrineRec = $this->buildQuery([
+            'criteria' => [
+                'id' => [
+                    'value' => $record_id,
+                    'type'  => 'equal',
+                ],
+            ]
+        ])
+        ->fetchOne();
+        if (false === $recDotrineRec)
+        {
+            return null;
+        }
+
+        return $this->getFormattedEntity($recDotrineRec);
+    }
+
 }
