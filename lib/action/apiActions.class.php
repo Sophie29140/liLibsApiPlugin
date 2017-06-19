@@ -204,7 +204,7 @@ abstract class apiActions extends jsonActions
             throw new liApiNotImplementedException('Sorry, create is impossible.');
         }
 
-        $isSuccess = $service->update($request->getParameter('application/json'));
+        $isSuccess = $service->create($request->getParameter('application/json'));
 
         if (!$isSuccess) {
             $status  = ApiHttpStatus::BAD_REQUEST;
