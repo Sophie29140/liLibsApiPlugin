@@ -17,9 +17,10 @@ class liApiPropertyAccessor
      *
      * Example of the expected API structure:
      * [
-     *   'id'      => ['type' => 'single', 'value' => 'id', 'updatable' => false],
-     *   'name'    => ['type' => 'single', 'value' => 'name'],
-     *   'value'   => ['type' => 'single', 'value' => 'value'],
+     *   'id'       => ['type' => 'single', 'value' => 'id', 'updatable' => false],
+     *   'name'     => ['type' => 'single', 'value' => 'name'],
+     *   'value'    => ['type' => 'single', 'value' => 'value'],
+     *   'data.id'  => ['type' => 'single', 'value' => 'SubObj.id', 'for-update' => 'sub_obj_id'],
      * ]
      *
      * @param array            $entity  the source of data
@@ -29,20 +30,23 @@ class liApiPropertyAccessor
      */
     public function toRecord(array $entity, Doctrine_Record $record, array $equiv)
     {
-        foreach ( $this->reverseEquiv($equiv) as $db => $api ) {
-            if ( !isset($entity[$api['value']]) ) {
+        // remove not updatable fields
+        $cleanedEquiv = [];
+        foreach ( $equiv as $api => $db ) {
+            if (!( isset($db['updatable']) && $db['updatable'] === false )) {
+                $db['value'] = isset($db['for-update']) ? $db['for-update'] : $db['value'];
+                unset($db['updatable'], $db['for-update']);
+                
+                $cleanedEquiv[$api] = $db;
+            }
+        }
+        
+        foreach ( $this->reverseEquiv($cleanedEquiv) as $db => $api ) {
+            $value = $this->getAPIValue($entity, $api['value']);
+            if ( $value === NULL ) {
                 continue;
             }
             
-            $cleanedDb = [];
-            foreach ( $db as $api => $rec ) {
-                if (!( isset($rec['updatable']) && $rec['updatable'] === false )) {
-                    unset($rec['updatable']);
-                    $cleanedDb[] = $rec;
-                }
-            }
-
-            $value = $this->getAPIValue($entity, $api['value']);
             $this->setRecordValue($record, preg_replace('/^!/', '', $db), strpos($db,'!') !== 0 ? $value : !$value);
         }
         
@@ -97,6 +101,8 @@ class liApiPropertyAccessor
     // new
     protected function getAPIValue(array $entity, $api)
     {
+        sfContext::getInstance()->getConfiguration()->loadHelpers(['AssociativeArray']);
+        
         $api = is_array($api) ? $api : explode('.', $api);
         $key = array_shift($api);
         $r = [];
@@ -109,7 +115,7 @@ class liApiPropertyAccessor
             return $entity[$key];
         }
 
-        if ( !is_array($entity[$key]) ) {
+        if (!( is_array($entity[$key]) && !is_assoc($entity[$key]) )) {
             $r = $this->getAPIValue($entity[$key], $api);
         }
         else {
@@ -240,7 +246,9 @@ class liApiPropertyAccessor
     {
         $r = [];
         foreach ( $equiv as $api => $db ) {
-            $r[$db['value']] = ['value' => $api, 'type' => $db['type']];
+            if ( isset($db['value']) && !is_array($db['value']) && !is_null($db['value']) ) {
+                $r[$db['value']] = ['value' => $api, 'type' => $db['type'], 'updatable' => isset($db['updatable']) ? $db['updatable'] : true];
+            }
         }
         return $r;
     }
